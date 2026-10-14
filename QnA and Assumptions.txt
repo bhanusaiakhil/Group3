@@ -6,31 +6,17 @@ QUESTIONS TO ASK THE CUSTOMER
 
 Priority 0 — Core lifecycle and availability
 
-Approval outcome: Does approving a request create a confirmed reservation awaiting pickup, or an active loan? What is the expected path from approval to issue?
-Pending request commitment: Does a request awaiting review reserve a specific physical copy immediately? Should pending requests expire if not reviewed within a defined period?
-Date boundaries: Are start and expected-return dates inclusive? May one loan end on the same date another begins? Which timezone and calendar rules apply?
-Copy assignment: When should the system assign a specific copy: on submission, approval, or issue? If it becomes unavailable before issue, should the request be rejected or reviewed again?
-Competing requests: How should requests competing for the final eligible copy be prioritized (submission time, requested start date, staff priority, or another rule)?
-Allowed request dates: May a request start in the past? Is there a minimum lead time, maximum loan duration, or maximum advance-booking window?
-Cancellation and issue: Who may cancel a reservation and until when? What should happen if cancellation and issue occur at nearly the same time?
-Copy restrictions: Who may mark a copy damaged, under repair, lost, reference-only, or otherwise unavailable? What approval or checks are required before it can be made available again?
-Member eligibility: What member types exist? Are there borrowing limits, blocked-member rules, or title/category restrictions?
-Initial data dates: Are the supplied dates intended as a historical snapshot or should they be shifted for the demonstration? The supplied issue/reservation dates are in August 2026, before the current date of 14 October 2026.
+Q: Date boundaries: Are start and expected-return dates inclusive? May one loan end on the same date another begins? Which timezone and calendar rules apply?
+A: If the person holding the book returns it, then it should show as availabilr on the site.
+Q: Cancellation and issue: Who may cancel a reservation and until when? What should happen if cancellation and issue occur at nearly the same time?
+A: Not an issue, can be done and it should be given to the next person in line.
 
 Priority 1 — Broader operating policies
 
-Overdue items: What are the overdue rules, including grace periods, fines, member blocks, and reminders?
-Renewals: Can a loan be extended, and how do existing reservations affect renewal eligibility?
-Notifications: Which events require notifications, through which channels, and with what delivery expectations?
-Roles and access: Which roles can view member data, review requests, issue/return copies, manage inventory, and administer users? Is authentication required beyond the prototype?
-Catalogue maintenance: Who can add or edit titles and copies? How are editions, duplicate records, copy identifiers, and discarded copies handled?
-Audit trail: Must the system record who performed each action, when it happened, and reasons for decisions or inventory restrictions?
-Reporting: Which reports are needed, such as circulation, demand, overdue items, unavailable copies, or staff workload?
-Library locations: Is there one location, or must the system support branches, shelves, and inter-branch transfers?
-Data management: What backup, restore, export, retention, and deletion requirements apply?
-Scale and service levels: How many members, titles, copies, and concurrent users are expected? What response-time, availability, and accessibility targets apply?
-Integrations: Is future integration with university identity, a catalogue, email/SMS, or other systems expected?
-Supported environment: Which operating systems, Python version, browsers, and local deployment approach must be supported?
+Q: Overdue items: What are the overdue rules, including grace periods, fines, member blocks, and reminders?
+A: Not implemented in the app, penalty will be added form somewhere else, like from the next semester or the no dues.
+Q: Renewals: Can a loan be extended, and how do existing reservations affect renewal eligibility?
+A: Yes, as long as there isn't someone else who wants it. If there is, then it cant be extended.
 
 ASSUMPTIONS FOR THE PROTOTYPE
 
@@ -52,12 +38,3 @@ Seed dates: Supplied title and copy counts are retained. The August 2026 activit
 Notifications and integrations: In-app status and feedback are sufficient. External APIs, email/SMS, and university integrations are excluded.
 Locale: The prototype uses a single language and date format; localization is not in scope unless requested.
 Production policies: Fines, overdue processing, renewals, reminders, analytics, multi-branch operation, disaster recovery, and production security/compliance are not included unless the customer reprioritizes scope.
-
-DECISIONS TO CONFIRM BEFORE IMPLEMENTATION OR DEMONSTRATION
-
-Date-overlap boundary and treatment of returned/expected-return dates.
-When a specific copy is assigned and whether pending requests hold it.
-Approval, reservation pickup, and reservation-expiry behavior.
-Interpretation or rebasing of the supplied August 2026 status dates.
-Storage choice, persistence behavior, and sample-data reset process.
-Any prototype exclusions the customer expects to be included.
