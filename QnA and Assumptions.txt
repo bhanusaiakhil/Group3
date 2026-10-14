@@ -1,0 +1,63 @@
+Library Management System — Customer Questions and Assumptions
+
+This document captures decisions to confirm with the customer and provisional assumptions for the hackathon prototype. Assumptions are not customer-approved policies.
+
+QUESTIONS TO ASK THE CUSTOMER
+
+Priority 0 — Core lifecycle and availability
+
+Approval outcome: Does approving a request create a confirmed reservation awaiting pickup, or an active loan? What is the expected path from approval to issue?
+Pending request commitment: Does a request awaiting review reserve a specific physical copy immediately? Should pending requests expire if not reviewed within a defined period?
+Date boundaries: Are start and expected-return dates inclusive? May one loan end on the same date another begins? Which timezone and calendar rules apply?
+Copy assignment: When should the system assign a specific copy: on submission, approval, or issue? If it becomes unavailable before issue, should the request be rejected or reviewed again?
+Competing requests: How should requests competing for the final eligible copy be prioritized (submission time, requested start date, staff priority, or another rule)?
+Allowed request dates: May a request start in the past? Is there a minimum lead time, maximum loan duration, or maximum advance-booking window?
+Cancellation and issue: Who may cancel a reservation and until when? What should happen if cancellation and issue occur at nearly the same time?
+Copy restrictions: Who may mark a copy damaged, under repair, lost, reference-only, or otherwise unavailable? What approval or checks are required before it can be made available again?
+Member eligibility: What member types exist? Are there borrowing limits, blocked-member rules, or title/category restrictions?
+Initial data dates: Are the supplied dates intended as a historical snapshot or should they be shifted for the demonstration? The supplied issue/reservation dates are in August 2026, before the current date of 14 October 2026.
+
+Priority 1 — Broader operating policies
+
+Overdue items: What are the overdue rules, including grace periods, fines, member blocks, and reminders?
+Renewals: Can a loan be extended, and how do existing reservations affect renewal eligibility?
+Notifications: Which events require notifications, through which channels, and with what delivery expectations?
+Roles and access: Which roles can view member data, review requests, issue/return copies, manage inventory, and administer users? Is authentication required beyond the prototype?
+Catalogue maintenance: Who can add or edit titles and copies? How are editions, duplicate records, copy identifiers, and discarded copies handled?
+Audit trail: Must the system record who performed each action, when it happened, and reasons for decisions or inventory restrictions?
+Reporting: Which reports are needed, such as circulation, demand, overdue items, unavailable copies, or staff workload?
+Library locations: Is there one location, or must the system support branches, shelves, and inter-branch transfers?
+Data management: What backup, restore, export, retention, and deletion requirements apply?
+Scale and service levels: How many members, titles, copies, and concurrent users are expected? What response-time, availability, and accessibility targets apply?
+Integrations: Is future integration with university identity, a catalogue, email/SMS, or other systems expected?
+Supported environment: Which operating systems, Python version, browsers, and local deployment approach must be supported?
+
+ASSUMPTIONS FOR THE PROTOTYPE
+
+Scope: This is a locally runnable hackathon prototype for one university library, not a production-ready campus-wide service.
+Copy-level inventory: Each physical copy has a unique identifier and operational status. A title's total is represented by its individual copy records.
+Members: Members are represented by a unique identifier and display name. No membership classes, borrowing limits, or eligibility blocks are applied unless added explicitly.
+Date input: Dates are local calendar dates. The expected return date must be later than the borrowing start date. The prototype will explicitly document its date-overlap convention because the source does not define it.
+Pending requests: A successfully submitted request awaiting review is an active commitment and blocks overlapping requests for its associated copy, consistent with the no-overlapping-active-requests condition.
+Copy association: Each submitted request is associated with one eligible physical copy, and that commitment is retained through state transitions without gaps. Assignment timing is not settled by the source and must be confirmed for production.
+Review flow: A librarian/staff user reviews requests. Approval creates a confirmed reservation, then staff performs a separate issue action to create an active loan. Rejection closes the request and releases its copy.
+Rejected requests: Rejected requests cannot be edited or reopened; revised details require a new request.
+Reservation cancellation: A confirmed reservation can be cancelled only before issue, and cancellation releases the associated copy.
+Return and restrictions: A normal return releases the copy. If staff marks it unavailable during return, the loan closes but the copy remains unavailable until explicitly restored.
+Unavailable copies: Operationally restricted copies cannot be allocated even if they have no overlapping request, reservation, or loan.
+Concurrency: The prototype runs as a single local instance. Availability checking and creating a copy commitment should be handled atomically within the chosen storage approach; multi-instance concurrency is out of scope.
+Authentication: Authentication is omitted to prioritize the lending lifecycle. The prototype does not enforce production-grade user identity or authorization and must not be exposed as a public service or used with real personal data.
+Persistence: A lightweight local datastore is used. Setup documentation will state whether data persists across restarts and how sample data is initialized or reset.
+Seed dates: Supplied title and copy counts are retained. The August 2026 activity data is historical relative to 14 October 2026; the demo must explicitly choose whether to retain it as history or rebase it.
+Notifications and integrations: In-app status and feedback are sufficient. External APIs, email/SMS, and university integrations are excluded.
+Locale: The prototype uses a single language and date format; localization is not in scope unless requested.
+Production policies: Fines, overdue processing, renewals, reminders, analytics, multi-branch operation, disaster recovery, and production security/compliance are not included unless the customer reprioritizes scope.
+
+DECISIONS TO CONFIRM BEFORE IMPLEMENTATION OR DEMONSTRATION
+
+Date-overlap boundary and treatment of returned/expected-return dates.
+When a specific copy is assigned and whether pending requests hold it.
+Approval, reservation pickup, and reservation-expiry behavior.
+Interpretation or rebasing of the supplied August 2026 status dates.
+Storage choice, persistence behavior, and sample-data reset process.
+Any prototype exclusions the customer expects to be included.

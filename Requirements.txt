@@ -1,0 +1,212 @@
+LIBRARY MANAGEMENT SYSTEM — REQUIREMENTS
+========================================
+
+1. PURPOSE AND SCOPE
+--------------------
+
+The university currently coordinates borrowing requests, reservations, issue records,
+and returns using registers, spreadsheets, and informal communication. The system
+must demonstrate a reliable lending lifecycle for physical library resources, with
+clear availability, review, and copy-state handling.
+
+The target deliverable is a locally runnable prototype. The challenge permits
+in-memory storage, local files, JSON, CSV, SQLite, or another lightweight local
+approach. Python is preferred. Cloud deployment, paid services, external APIs,
+complex infrastructure, and university production-system access are not required.
+Authentication is optional.
+
+2. STAKEHOLDERS
+---------------
+
+- Student / library member: search titles, check availability, submit and track
+  requests, cancel an eligible reservation, and understand outcomes.
+- Librarian / request reviewer: review requests, approve or reject, issue books,
+  record returns, and manage copy restrictions.
+- Library administrator: maintain catalogue, members, copies, and policies
+  (administrator capabilities are inferred, not explicitly required).
+- University/library management: may need operational and circulation reporting;
+  specific reporting requirements are not stated.
+- Evaluator/demo operator: run the prototype locally and observe end-to-end and
+  conflict/failure scenarios.
+
+3. FUNCTIONAL REQUIREMENTS
+--------------------------
+
+Catalogue and inventory
+
+FR-01. Maintain book-title records with at least a title and category.
+FR-02. Represent each title with individually identifiable physical copies.
+       Availability must be evaluated per copy, not only from a title-level count.
+FR-03. Track a copy's operational availability. Support unavailable states such as
+       damaged, under repair, lost, reference-only, or another operational restriction.
+FR-04. Show useful availability for a requested period and explain why no copy can
+       satisfy the request.
+FR-05. Provide the initial sample catalogue and statuses supplied in the challenge
+       for demonstration and testing:
+       - Clean Code — Software Engineering — 4 copies; 2 issued until 4 Aug 2026.
+       - Introduction to Algorithms — Algorithms — 3 copies; 1 reserved from
+         4 Aug 2026 to 8 Aug 2026.
+       - Design Patterns — Software Design — 2 copies; 1 unavailable due to damage.
+       - Database System Concepts — Databases — 5 copies; all available.
+       - Artificial Intelligence: A Modern Approach — Artificial Intelligence —
+         3 copies; 1 issued until 4 Aug 2026 and 1 reserved from 6 Aug 2026 to
+         7 Aug 2026.
+
+Borrowing requests and availability
+
+FR-06. Record each borrowing request's member, selected title, borrowing start date,
+       and expected return date.
+FR-07. Validate member and title references and requested dates. A return date must
+       be after the borrowing start date.
+FR-08. Before submission, identify at least one operationally available copy that
+       has no overlapping commitment for the full requested period.
+FR-09. Do not commit a physical copy to overlapping active borrowing requests,
+       confirmed reservations, or active loans.
+FR-10. Prevent submission when no copy of the selected title is available for the
+       requested period. Communicate the reason clearly and do not silently
+       substitute another title.
+FR-11. A successful submission enters a review process and retains its copy
+       commitment while active, according to the selected policy.
+
+Review and reservations
+
+FR-12. An appropriate reviewer can inspect, approve, or reject a submitted request.
+FR-13. Rejection closes the request and releases its associated copy commitment.
+FR-14. Rejected requests cannot be revised in place; the requester must submit a
+       new request with revised details.
+FR-15. Approval results in a confirmed reservation or loan according to the agreed
+       policy. The copy commitment must transfer without a gap or double allocation.
+FR-16. An authorized end user can cancel a confirmed reservation before issue.
+       Cancellation releases the copy for another valid request.
+
+Issue and return
+
+FR-17. Staff can issue a reserved copy and record an active loan.
+FR-18. Staff can record a return and release the associated copy.
+FR-19. During return, staff can mark the copy unavailable (for example, damaged or
+       requiring repair). Such a copy must not be offered for future requests.
+FR-20. Keep request, reservation, loan, and copy states consistent through approval,
+       rejection, cancellation, issue, and return.
+
+User feedback and demonstration
+
+FR-21. Present actionable validation, conflict, and operation-failure messages.
+FR-22. Demonstrate at least one end-to-end lending flow and one conflict, invalid,
+       or failure scenario.
+FR-23. Show current request status and relevant title/copy availability to users
+       who need the information.
+
+4. NON-FUNCTIONAL REQUIREMENTS
+------------------------------
+
+NFR-01. Local deployability: Run locally and provide prerequisites, setup, and
+        startup instructions. No cloud deployment, paid service, external API,
+        complex infrastructure, or production-system access is needed.
+NFR-02. Persistence: Use an allowed lightweight local storage approach. Document
+        the choice, restart/data-loss behavior, and sample/reset process.
+NFR-03. Consistency: Prevent overlapping copy commitments and keep lifecycle and
+        copy state consistent, including during competing submissions and state
+        transitions.
+NFR-04. Usability: Make common member and staff tasks understandable with clear
+        status labels, validation, and explanations for blocked requests.
+NFR-05. Reliability: Invalid or conflicting operations must fail visibly and safely;
+        they must not double-book a copy or leave an unintended commitment.
+NFR-06. Maintainability and explainability: Keep the prototype small and structured
+        enough for the team to explain its rules, validation, and design choices.
+        Document trade-offs and known limitations.
+NFR-07. Security and privacy: Authentication is optional for the challenge. If
+        omitted, disclose that the prototype is not suitable for real member data
+        or public deployment. Avoid collecting unnecessary personal information.
+NFR-08. Testability: Validate core rules with repeatable tests or scenarios,
+        including overlap conflicts, rejection release, reservation cancellation,
+        issue/return, and return with an unavailable status.
+NFR-09. Accessibility and compatibility: Use readable labels and feedback and
+        support the agreed local browser/device environment. Specific standards
+        require customer confirmation.
+NFR-10. Performance and scale: No production scale or response-time targets are
+         stated. Remain responsive for the supplied demonstration dataset; confirm
+         production targets with the customer.
+
+5. BUSINESS RULES AND WORKFLOW
+------------------------------
+
+- Availability is determined per physical copy, for the full requested period.
+- A candidate copy must be operationally available and have no overlapping active
+  request, confirmed reservation, or active loan.
+- If no copy satisfies the request, submission is blocked with a clear reason.
+- A submitted request must be reviewed before becoming a confirmed reservation or
+  loan.
+- Rejection closes the request and releases its copy. Revised information requires
+  a new request.
+- A confirmed reservation may be cancelled before issue; cancellation releases its
+  copy.
+- A return releases its copy unless staff marks it unavailable during return.
+- Any operational restriction prevents the copy from being allocated until cleared.
+- Approval, rejection, cancellation, issue, and return must not introduce an
+  unintended gap, double-booking, or stranded copy commitment.
+- Partial fulfilment and automatic alternative-book recommendations are not
+  required.
+
+6. SUGGESTED ACCEPTANCE CRITERIA
+-------------------------------
+
+AC-01. Accept a valid request only if at least one copy can cover its requested
+       period.
+AC-02. Block an overlapping request against the only eligible copy and explain why.
+AC-03. Reject missing/unknown member or title data, invalid dates, and a return
+       date that is not after the start date.
+AC-04. After rejection, close the request and allow a later valid request to use
+       the released copy.
+AC-05. Allow cancellation of a confirmed, not-yet-issued reservation and release
+       its copy; refuse cancellation after issue.
+AC-06. Issuing a reservation creates an active loan that blocks overlapping
+       requests.
+AC-07. Returning a loan releases the copy unless it is marked unavailable.
+AC-08. Prevent allocation of damaged, under-repair, lost, reference-only, or
+       otherwise unavailable copies.
+AC-09. Preserve consistent commitments across approval, rejection, cancellation,
+       issue, and return.
+AC-10. Documented instructions start the app locally, and the demo can show a
+       successful lifecycle plus a conflict/failure scenario.
+
+7. PROTOTYPE SCOPE AND EXCLUSIONS
+---------------------------------
+
+Recommended priorities for the 90-minute challenge:
+
+1. Model titles, individual copies, members, requests, reservations, and loans.
+2. Implement date-aware availability and conflict prevention.
+3. Implement review, rejection/release, cancellation, issue, and return, including
+   marking a copy unavailable on return.
+4. Provide a simple local UI, sample data, clear messages, and repeatable checks.
+5. Document setup, assumptions, exclusions, trade-offs, and known limitations.
+
+Explicitly not required:
+
+- Partial fulfilment or automatic recommendations for alternative titles.
+- Cloud deployment, paid services, complex infrastructure, external APIs, or
+  university production integrations.
+- Authentication, although a team may implement it and explain why it was
+  prioritized.
+
+Likely additional prototype exclusions, subject to customer confirmation:
+
+- Fines, payments, overdue reminders, renewals, analytics, branch transfers,
+  production identity integration, and production-grade role/permission management.
+- High availability, multi-instance scaling, formal disaster recovery, and
+  compliance certification.
+
+8. RISKS AND DESIGN CONSIDERATIONS
+----------------------------------
+
+- A lightweight local datastore is quick to build but may not safely support
+  multiple concurrent application instances.
+- Without authentication, users may impersonate members or staff. Do not use real
+  personal data or expose the prototype publicly.
+- A pending request that reserves a copy can block other users if review is delayed;
+  production operations need a timeout or queue policy.
+- The supplied activity dates are in August 2026. As of 14 October 2026 they are
+  historical, so the demo must clarify whether to retain them as history or rebase
+  them.
+- The challenge does not define approval-versus-issue behavior or date-boundary
+  semantics; inconsistent choices can cause double-booking or false conflicts.
